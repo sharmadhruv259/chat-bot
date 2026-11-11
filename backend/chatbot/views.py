@@ -6,6 +6,7 @@ import logging
 
 from django.conf import settings
 from django.http import HttpRequest, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from groq import (
     APIConnectionError as GroqConnectionError,
@@ -32,7 +33,7 @@ from .services.chat_service import generate_chat_response
 logger = logging.getLogger(__name__)
 
 
-
+@csrf_exempt
 @require_POST
 def chat_view(request: HttpRequest) -> JsonResponse:
     """Validate a chatbot request and handle API errors.
