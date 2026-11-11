@@ -1,0 +1,7 @@
+Django>=5.2,<6.0
+groq
+pydantic>=2,<3
+python-dotenv
+streamlit
+requests
+backoff
