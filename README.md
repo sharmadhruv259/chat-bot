@@ -1,3 +1,6 @@
+Project Demo Link: [Screencast from 11-11-26 03:41:11 PM IST.webm](https://github.com/user-attachments/assets/1f1e7260-7bd2-4a4e-915d-c2496062a5c8)
+
+
 # Chat Bot — Django, Groq, Streamlit & Guardrails
 
 A local chatbot project built with **Django**, **Groq**, and **Streamlit** to explore input/output safety checks, API moderation, and resilient external API calls.
