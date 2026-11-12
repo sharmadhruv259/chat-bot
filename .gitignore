@@ -51,3 +51,4 @@ Thumbs.db
 
 *.pem
 frontend/streamlit/config.toml
+config.toml
