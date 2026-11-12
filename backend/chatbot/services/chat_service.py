@@ -6,12 +6,12 @@
 
 from django.conf import settings
 
-from ..clients import get_groq_client
 from ..constants import MAX_OUTPUT_TOKENS, SYSTEM_PROMPT, TEMPERATURE
 from ..guardrails.orchestrator import run_guardrails
 from ..schemas import ChatRequest, ChatResponse, GuardrailResult
 from ..utils.helpers import build_message_history
 from ..utils.api_retry import retry_api_call
+from ..clients import get_groq_client
 
 def build_blocked_response(result: GuardrailResult) -> ChatResponse:
     """Build a response for content blocked by a guardrail.
