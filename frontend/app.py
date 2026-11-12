@@ -85,9 +85,23 @@ with st.sidebar:
         st.rerun()
 
     st.divider()
+    st.subheader("Safety Settings")
+
+    GUARDRAIL_DESCRIPTIONS = {
+        "Code-based Guardrails": "Checks message length and invalid characters.",
+        "LLM-based Guardrails": "A Groq safety model reviews the content.",
+        "OpenAI Moderation": "Classifies potentially harmful content.",
+    }
 
     if "guardrails" not in st.session_state:
         st.session_state["guardrails"] = ["Code-based Guardrails"]
+
+    def toggle_guardrail(name):
+        selected = st.session_state["guardrails"]
+        if name in selected:
+            selected.remove(name)
+        else:
+            selected.append(name)
 
     def select_all_guardrails():
         st.session_state["guardrails"] = list(GUARDRAIL_OPTIONS)
@@ -95,28 +109,38 @@ with st.sidebar:
     def clear_guardrails():
         st.session_state["guardrails"] = []
 
-    # select_col, clear_col = st.columns(2, gap="small")
-    # with select_col:
-    #     st.button(
-    #         "Select all",
-    #         key="select_all_guardrails",
-    #         on_click=select_all_guardrails,
-    #         use_container_width=True,
-    #     )
-    # with clear_col:
-    #     st.button(
-    #         "Clear",
-    #         key="clear_guardrails",
-    #         on_click=clear_guardrails,
-    #         use_container_width=True,
-    #     )
+    st.caption("Click a guardrail to turn it on or off.")
 
-    selected_guardrails = st.multiselect(
-        "Enable Guardrails",
-        options=list(GUARDRAIL_OPTIONS),
-        key="guardrails",
-        help="Checks run automatically at their appropriate stages.",
-    )
+    # Each guardrail is a clickable card. The key changes with the state so
+    # style.css can show a green dot (on) or a grey dot (off).
+    for name, description in GUARDRAIL_DESCRIPTIONS.items():
+        is_on = name in st.session_state["guardrails"]
+        st.button(
+            name,
+            key=f"guard_{'on' if is_on else 'off'}_{GUARDRAIL_OPTIONS[name]}",
+            on_click=toggle_guardrail,
+            args=(name,),
+            help=description,
+            use_container_width=True,
+        )
+
+    select_col, clear_col = st.columns(2, gap="small")
+    with select_col:
+        st.button(
+            "Select all",
+            key="select_all_guardrails",
+            on_click=select_all_guardrails,
+            use_container_width=True,
+        )
+    with clear_col:
+        st.button(
+            "Unselect all",
+            key="clear_guardrails",
+            on_click=clear_guardrails,
+            use_container_width=True,
+        )
+
+    selected_guardrails = st.session_state["guardrails"]
 
     enabled_guardrails = [
         GUARDRAIL_OPTIONS[name]
@@ -126,20 +150,6 @@ with st.sidebar:
     st.caption(
         f"{len(enabled_guardrails)} optional guardrail(s) enabled"
     )
-
-    guardrail_descriptions = {
-        "Code-based Guardrails": "Checks message length and invalid characters.",
-        "LLM-based Guardrails": "A Groq safety model reviews the content.",
-        "OpenAI Moderation": "Classifies potentially harmful content.",
-    }
-
-    for name, description in guardrail_descriptions.items():
-        state = "on" if name in selected_guardrails else "off"
-        st.markdown(
-            f'<div class="guard-row"><span class="dot {state}"></span>'
-            f"<div><b>{name}</b>{description}</div></div>",
-            unsafe_allow_html=True,
-        )
 
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
