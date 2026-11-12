@@ -160,3 +160,64 @@ div[data-baseweb="select"] > div {
 [data-testid="stChatInput"] textarea { color: var(--text); }
 
 div[data-testid="stAlert"] { border-radius: 12px; }
+
+/* ---------- Clickable guardrail cards (green dot = on) ---------- */
+[class*="st-key-guard_on_"] button,
+[class*="st-key-guard_off_"] button {
+    justify-content: flex-start; text-align: left;
+    padding: .7rem .85rem; border-radius: 12px;
+    background: var(--card); border: 1px solid var(--line);
+    color: var(--muted); font-weight: 600;
+}
+[class*="st-key-guard_on_"] button p,
+[class*="st-key-guard_off_"] button p {
+    display: flex; align-items: center; margin: 0;
+}
+[class*="st-key-guard_on_"] button p::before,
+[class*="st-key-guard_off_"] button p::before {
+    content: ""; width: 9px; height: 9px; border-radius: 50%;
+    margin-right: .7rem; flex: none; background: #3b4562;
+}
+[class*="st-key-guard_on_"] button {
+    color: var(--text);
+    border-color: rgba(52,211,153,.55);
+    background: linear-gradient(135deg, rgba(52,211,153,.14), rgba(52,211,153,.03));
+}
+[class*="st-key-guard_on_"] button p::before {
+    background: #34d399; box-shadow: 0 0 8px #34d399;
+}
+[class*="st-key-guard_on_"] button:hover,
+[class*="st-key-guard_off_"] button:hover {
+    border-color: var(--accent-2); color: #fff;
+}
+
+/* ---------- Session stats + block history ---------- */
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; margin-bottom: .6rem; }
+.stat {
+    border: 1px solid var(--line); background: var(--card);
+    border-radius: 12px; padding: .6rem .75rem;
+}
+.stat-num {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 1.6rem; font-weight: 800; line-height: 1.1; color: var(--text);
+}
+.stat-label { font-size: .72rem; color: var(--muted); margin-top: .15rem; }
+.stat.blocked { border-color: rgba(251,191,36,.35); }
+.stat.blocked .stat-num { color: var(--amber); }
+
+.stat-rows { margin-bottom: .6rem; }
+.stat-row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: .8rem; color: var(--muted);
+    padding: .3rem .1rem; border-bottom: 1px solid var(--line);
+}
+.stat-row b { color: var(--amber); }
+
+[data-testid="stSidebar"] [data-testid="stExpander"] {
+    border: 1px solid var(--line); border-radius: 12px; background: var(--card);
+}
+.hist-item { padding: .55rem 0; border-bottom: 1px solid var(--line); }
+.hist-item:last-child { border-bottom: none; }
+.hist-prompt { color: var(--text); font-size: .82rem; line-height: 1.45; word-break: break-word; }
+.hist-meta { display: flex; gap: .35rem; flex-wrap: wrap; margin: .35rem 0 .2rem; }
+.hist-reason { color: var(--muted); font-size: .74rem; line-height: 1.4; }
