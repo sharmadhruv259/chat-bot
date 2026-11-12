@@ -2,6 +2,7 @@
 
 import html
 import os
+from collections import Counter
 from pathlib import Path
 
 import requests
@@ -69,6 +70,76 @@ def render_message(message):
         st.error(message["content"])
     else:
         st.markdown(message["content"])
+
+
+def collect_session_stats(messages):
+    """Derive stats and block history from the stored chat messages."""
+    sent = sum(1 for message in messages if message["role"] == "user")
+    blocks = []
+
+    for index, message in enumerate(messages):
+        info = message.get("guardrail")
+        if info and index > 0:
+            blocks.append(
+                {
+                    "prompt": messages[index - 1]["content"],
+                    "name": info["name"],
+                    "stage": info["stage"],
+                    "reason": info["reason"],
+                }
+            )
+
+    per_guardrail = Counter(block["name"] for block in blocks)
+    return sent, blocks, per_guardrail
+
+
+def render_session_stats(container, messages):
+    sent, blocks, per_guardrail = collect_session_stats(messages)
+
+    with container:
+        st.markdown(
+            '<div class="stat-grid">'
+            f'<div class="stat"><div class="stat-num">{sent}</div>'
+            '<div class="stat-label">Messages sent</div></div>'
+            f'<div class="stat blocked"><div class="stat-num">{len(blocks)}</div>'
+            '<div class="stat-label">Blocked</div></div>'
+            "</div>",
+            unsafe_allow_html=True,
+        )
+
+        if per_guardrail:
+            rows = "".join(
+                f'<div class="stat-row"><span>{html.escape(str(name))}</span>'
+                f"<b>{count}</b></div>"
+                for name, count in per_guardrail.most_common()
+            )
+            st.markdown(
+                f'<div class="stat-rows">{rows}</div>',
+                unsafe_allow_html=True,
+            )
+        else:
+            st.caption("No blocks yet.")
+
+        with st.expander(f"Block history ({len(blocks)})"):
+            if not blocks:
+                st.caption("Blocked prompts will appear here.")
+
+            for block in reversed(blocks):
+                prompt_text = block["prompt"]
+                if len(prompt_text) > 120:
+                    prompt_text = prompt_text[:120] + "..."
+
+                st.markdown(
+                    '<div class="hist-item">'
+                    f'<div class="hist-prompt">{html.escape(prompt_text)}</div>'
+                    '<div class="hist-meta">'
+                    f'<span class="badge">{html.escape(str(block["name"]))}</span>'
+                    f'<span class="badge stage">stage: {html.escape(str(block["stage"]))}</span>'
+                    "</div>"
+                    f'<div class="hist-reason">{html.escape(str(block["reason"]))}</div>'
+                    "</div>",
+                    unsafe_allow_html=True,
+                )
 
 
 st.title("Chat Bot")
@@ -150,6 +221,10 @@ with st.sidebar:
     st.caption(
         f"{len(enabled_guardrails)} optional guardrail(s) enabled"
     )
+
+    st.divider()
+    st.subheader("Session Stats")
+    stats_container = st.container()
 
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
@@ -273,3 +348,6 @@ if prompt:
                 "content": answer,
             }
         )
+
+
+render_session_stats(stats_container, st.session_state.messages)
