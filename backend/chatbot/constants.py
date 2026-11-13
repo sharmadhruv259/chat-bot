@@ -6,7 +6,7 @@ SYSTEM_PROMPT = (
     "Maintain conversation context when responding to follow-up questions."
 )
 
-MAX_INPUT_LENGTH = 50
+MAX_INPUT_LENGTH = 200
 MAX_OUTPUT_LENGTH = 8000
 MAX_HISTORY_MESSAGES = 50
 MAX_OUTPUT_TOKENS = 512
